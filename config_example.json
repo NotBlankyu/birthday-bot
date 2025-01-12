@@ -1,0 +1,6 @@
+{
+    "discord_token":"token",
+    "clientId":"id",
+    "mongodb_user":"user",
+    "mongodb_pass":"password"
+}
