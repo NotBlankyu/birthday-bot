@@ -1,7 +1,8 @@
 const { MongoClient, ServerApiVersion } = require('mongodb');
-const { mongodb_pass, mongodb_user } = require('../config.json');
-const username = encodeURIComponent(mongodb_user);
-const password = encodeURIComponent(mongodb_pass);
+//const { mongodb_pass, mongodb_user } = require('../config.json');
+require('dotenv').config()
+const username = encodeURIComponent(process.env.MONGODBUSER);
+const password = encodeURIComponent(process.env.MONGODBPASS);
 let uri = `mongodb+srv://${username}:${password}@cluster0.2zgae.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version

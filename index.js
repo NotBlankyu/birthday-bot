@@ -1,9 +1,11 @@
 const { Client, Events, GatewayIntentBits, Collection, MessageFlags } = require('discord.js');
-const { discord_token } = require('./config.json');
+//const { discord_token } = require('./config.json');
+require('dotenv').config()
 const fs = require('node:fs');
 const path = require('node:path');
 const cron = require('node-cron');
 
+const discord_token = process.env.DISCORD_TOKEN;
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 
