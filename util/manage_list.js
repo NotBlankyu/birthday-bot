@@ -21,13 +21,12 @@ async function manage_message(channel){
     }
     channel.messages.fetch({limit: 100})
     .then(messages => channel.bulkDelete(messages.filter(message =>
-         message.author.id === '1327607768739352651')))
-    .catch(console.error);
+         message.author.id === '1327607768739352651'))).then(e => {
     const chunks = text.match(/[\s\S]{1,1000}\)/g) || [];
-    
     chunks.forEach(async chunk => {
         await channel.send(chunk);
-    });
+    });});
+    
 }
 
 module.exports = {
