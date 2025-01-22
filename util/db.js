@@ -26,21 +26,43 @@ async function run() {
   }
 }
 
-async function save_server(_server_id,_channel_id,_message_id) {
+async function save_server(_server_id,_channel_id) {
     try {
         await client.connect();
         let servers = await client.db("birthdaybot").collection("servers");
-        const server = await servers.findOne({server_id:_server_id})
-        const doc  = {server_id:_server_id,message_id:_message_id,channel_id:_channel_id};
-        if(!server){
-            await servers.insertOne(doc)
-        }else{
-            await servers.replaceOne({server_id:_server_id},doc)
-        }
+        await servers.updateOne({server_id:_server_id} ,{$set: {
+          channel_id: _channel_id
+        }})
     }finally{
         await client.close();
     }
 }
+
+async function save_server_role(_server_id,role_id) {
+  try {
+      await client.connect();
+      let servers = await client.db("birthdaybot").collection("servers");
+      await servers.updateOne({server_id:_server_id} ,{$set: {
+        role_id: role_id
+      }})
+  }finally{
+      await client.close();
+  }
+}
+
+
+async function save_server_pings(_server_id,_channel_id) {
+  try {
+      await client.connect();
+      let servers = await client.db("birthdaybot").collection("servers");
+      await servers.updateOne({server_id:_server_id} ,{$set: {
+        channel_pings_id: _channel_id
+      }})
+  }finally{
+      await client.close();
+  }
+}
+
 
 async function get_server(_server_id){
   var server;
@@ -164,10 +186,12 @@ async function get_birthdays_on_day(day) {
 
 module.exports =  {
     save_server,
+    save_server_role,
     get_birthdays,
     get_birthdays_on_day,
     save_birthday,
     get_server,
-    delete_birthday
+    delete_birthday,
+    save_server_pings
 }
 

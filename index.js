@@ -4,9 +4,11 @@ require('dotenv').config()
 const fs = require('node:fs');
 const path = require('node:path');
 const cron = require('node-cron');
+const { get_server,delete_birthday } = require('./util/db');
+const { manage_message } = require('./util/manage_list');
 
 const discord_token = process.env.DISCORD_TOKEN;
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds,GatewayIntentBits.GuildMembers,GatewayIntentBits.GuildPresences] });
 
 
 client.once(Events.ClientReady, readyClient => {
@@ -50,6 +52,14 @@ client.on(Events.InteractionCreate, async interaction => {
 			await interaction.reply({content: `There was an error with this command`,flags:MessageFlags.Ephemeral})
 		}
 	}
+})
+
+client.on(Events.GuildMemberRemove, async guildmember => {
+	var server_info = await get_server(guildmember.guild.id)
+	var result = await delete_birthday(guildmember.guild.id,guildmember.user.id)
+	if(result){
+		await manage_message(await guildmember.guild.channels.fetch(server_info.channel_id))
+	}	
 })
 
 
