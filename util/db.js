@@ -43,13 +43,14 @@ async function save_server(_server_id,_channel_id,_message_id) {
 }
 
 async function get_server(_server_id){
+  var server;
   try {
     await client.connect();
-    let servers = await client.db("birthdaybot").collection("servers");
-    const server = await servers.findOne({server_id:_server_id})
-    return server
+    let servers = client.db("birthdaybot").collection("servers");
+    server = await servers.findOne({server_id:_server_id})
 }finally{
     await client.close();
+    return server
 }
 }
 
@@ -57,7 +58,7 @@ async function get_birthdays(_server_id){
     let server_birthdays = []
     try {
         await client.connect();
-        let birthdays = await client.db("birthdaybot").collection("birthdays");
+        let birthdays = client.db("birthdaybot").collection("birthdays");
 
         const  options = {
           projection:{
@@ -91,7 +92,7 @@ async function save_birthday(_server_id,_user_id,_username,_birthday){
         await client.connect();
         let birthdays = await client.db("birthdaybot").collection("birthdays");
         user = await birthdays.findOne({server_id:_server_id,user_id:_user_id});
-        let doc = {server_id:_server_id,user_id:_user_id,username:_username,birthday:_birthday};
+        let doc = {server_id:_server_id,user_id:_user_id,username:_username,birthday:_birthday,birthdate:_birthday.slice(0,-5)};
         if(!user){
             await birthdays.insertOne(doc);
         }else{
@@ -124,10 +125,47 @@ async function delete_birthday(_server_id,_user_id){
   }
 }
 
+async function get_birthdays_on_day(day) {
+  try {
+    await client.connect();
+    let birthdays = await client.db("birthdaybot").collection("birthdays");
+
+    const  options = {
+      projection:{
+        user_id:1,
+        server_id:1,
+        birthday:1,
+        username:1,
+        _id:0
+      }
+    }
+
+    const  query = {birthdate:day};
+
+    const cursor = birthdays.find(query,options);
+    if((await birthdays.countDocuments(query)) === 0){
+      console.log("No birthdays found.")
+    }
+    var bd = [];
+    for await(const document of cursor){
+      //server_birthdays.push(document);
+      //Save user id and server id on  something and return it
+      //console.log(document)
+      //bd.set(document.user_id,document.server_id)
+      bd.push(`${document.server_id}/${document.user_id}`)
+    }
+
+  } finally {
+    await client.close();
+  }
+  return bd;
+}
+
 
 module.exports =  {
     save_server,
     get_birthdays,
+    get_birthdays_on_day,
     save_birthday,
     get_server,
     delete_birthday
