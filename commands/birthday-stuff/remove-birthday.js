@@ -14,9 +14,9 @@ module.exports = {
             let server_info = await get_server(interaction.guildId)
             let channel = await interaction.client.channels.fetch(server_info.channel_id)
             await manage_message(channel)
-            await interaction.reply({content:`Birthday removed.`,flags:MessageFlags.Ephemeral});
+            await interaction.followUp({content:`Birthday removed.`,flags:MessageFlags.Ephemeral});
         }else{
-            await interaction.reply({content:`Your birthday isn't  on the list.`,flags:MessageFlags.Ephemeral});
+            await interaction.followUp({content:`Your birthday isn't  on the list.`,flags:MessageFlags.Ephemeral});
         }
         
 	},
