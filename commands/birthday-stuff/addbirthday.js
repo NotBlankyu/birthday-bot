@@ -30,6 +30,7 @@ module.exports = {
             .setRequired(true)
         ),
 	async execute(interaction) {
+        await interaction.deferReply()
         const day = interaction.options.getInteger('day')
         const month = interaction.options.getInteger('month');
         const year = interaction.options.getInteger('year');

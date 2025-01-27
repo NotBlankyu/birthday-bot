@@ -8,6 +8,7 @@ module.exports = {
 		.setDescription('Remove your birthday from the list')
         ,
 	async execute(interaction) {
+        await interaction.deferReply()
         let result = await delete_birthday(interaction.guildId,interaction.user.id)
         if (result){
             let server_info = await get_server(interaction.guildId)
