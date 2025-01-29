@@ -30,9 +30,15 @@ async function save_server(_server_id,_channel_id) {
     try {
         await client.connect();
         let servers = await client.db("birthdaybot").collection("servers");
-        await servers.updateOne({server_id:_server_id} ,{$set: {
-          channel_id: _channel_id
-        }})
+        let s = await servers.findOne({server_id:_server_id})
+        if(s){
+          await servers.updateOne({server_id:_server_id} ,{$set: {
+            channel_id: _channel_id
+          }})
+        }else{
+          await servers.insertOne({server_id:_server_id,channel_id:_channel_id});
+        }
+        
     }finally{
         await client.close();
     }
