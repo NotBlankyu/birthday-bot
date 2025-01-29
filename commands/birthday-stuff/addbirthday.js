@@ -34,7 +34,7 @@ module.exports = {
         const day = interaction.options.getInteger('day')
         const month = interaction.options.getInteger('month');
         const year = interaction.options.getInteger('year');
-        await save_birthday(interaction.guildId,interaction.user.id,interaction.user.username,`${day}/${month}/${year}`)
+        await save_birthday(interaction.guildId,interaction.user.id,interaction.user.displayName,`${day}/${month}/${year}`)
         let server_info = await get_server(interaction.guildId)
         if(server_info == null  || server_info.channel_id == null){
             await interaction.followUp({content:`The birthday channel needs to be defined first.`,flags:MessageFlags.Ephemera})
