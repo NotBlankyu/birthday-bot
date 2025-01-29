@@ -14,8 +14,8 @@ var server_channel_dict = new Map()
 client.once(Events.ClientReady, async readyClient => {
     console.log(`Ready! Logged in as ${readyClient.user.tag}`);
     var day = new Date();
-    var day = `${day.getDate()}/${day.getMonth()+1}}`
-    //var day= "21/8"
+    var day = `${day.getDate()}/${day.getMonth()+1}`
+    var day= "29/1"
     var birthdays = await get_birthdays_on_day(day)
     for (const user of birthdays) {
         const ids = user.split("/")
