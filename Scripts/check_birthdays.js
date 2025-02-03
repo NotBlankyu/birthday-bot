@@ -16,6 +16,7 @@ client.once(Events.ClientReady, async readyClient => {
     var day = new Date();
     var day = `${day.getDate()}/${day.getMonth()+1}`
     var birthdays = await get_birthdays_on_day(day)
+    let i = 0
     for (const user of birthdays) {
         const ids = user.split("/")
         var channel_id = server_channel_dict.get(ids[0])
@@ -55,7 +56,10 @@ client.once(Events.ClientReady, async readyClient => {
             })
                 .catch(console.error);
         }
-        
+        i += 1;
+    }
+    if(i == birthdays.length()){
+        process.exit()
     }
     
 });
