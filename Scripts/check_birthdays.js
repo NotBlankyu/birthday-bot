@@ -13,7 +13,10 @@ var server_channel_dict = new Map()
 
 client.once(Events.ClientReady, async readyClient => {
     console.log(`Ready! Logged in as ${readyClient.user.tag}`);
-    var day = new Date();
+    var date = new Date();
+    var utc = date.getTime() + (3600000*1)
+    var day = new Date(utc);
+
     var day = `${day.getDate()}/${day.getMonth()+1}`
     var birthdays = await get_birthdays_on_day(day)
     let i = 0
