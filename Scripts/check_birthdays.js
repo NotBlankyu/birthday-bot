@@ -61,7 +61,7 @@ client.once(Events.ClientReady, async readyClient => {
         }
         i += 1;
     }
-    if(i == birthdays.length()){
+    if(i == birthdays.length){
         process.exit()
     }
     
