@@ -6,6 +6,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const cron = require('node-cron');
 
+
 const discord_token = process.env.DISCORD_TOKEN;
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
@@ -34,12 +35,14 @@ client.once(Events.ClientReady, async readyClient => {
                     .setDescription(`Today is <@${ids[1]}> birthday!!!`)
                     .setImage(_user.avatarURL({ format: 'jpg', size: 1024 }))
                     if(server.role_id){
-                        channel.send({content:`<@&${server.role_id}>`,embeds:[embed]})
+                        channel.send({content:`<@&${server.role_id}>`,embeds:[embed]}).then( _ => {i += 1;terminate(i,birthdays.length)} )
                     }else{
-                        channel.send({embeds:[embed]})
+                        channel.send({embeds:[embed]}).then( _ => {i += 1;terminate(i,birthdays.length)} )
                     }
                     
-                }).catch(console.error);
+                }).catch((error) => {
+                    console.error(error);
+                  });
             })
             
         }else{
@@ -51,20 +54,23 @@ client.once(Events.ClientReady, async readyClient => {
                 .setTitle(`Happy birthday <@${ids[1]}>!!!`)
                 .setImage(_user.avatarURL())
                 if(server.role_id){
-                    channel.send({content:`<@&${server.role_id}>`,embeds:[embed]})
+                    channel.send({content:`<@&${server.role_id}>`,embeds:[embed]}).then( _ => {i += 1;terminate(i,birthdays.length)} )
                 }else{
-                    channel.send({embeds:[embed]})
+                    channel.send({embeds:[embed]}).then( _ => {i += 1;terminate(i,birthdays.length)} )
                 }
                 //channel.send({files:[_user.avatarURL()]})
             })
                 .catch(console.error);
         }
-        i += 1;
     }
-    if(i == birthdays.length){
-        process.exit()
-    }
+
     
 });
 
 client.login(discord_token);
+
+function terminate(i,j){
+    if(i == j){
+        process.exit()
+    }
+}
