@@ -21,6 +21,9 @@ client.once(Events.ClientReady, async readyClient => {
     var day = `${day.getDate()}/${day.getMonth()+1}`
     var birthdays = await get_birthdays_on_day(day)
     let i = 0
+    if(birthdays.length == 0){
+        process.exit();
+    }
     for (const user of birthdays) {
         const ids = user.split("/")
         var channel_id = server_channel_dict.get(ids[0])
