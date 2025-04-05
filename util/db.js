@@ -43,6 +43,23 @@ async function save_server(_server_id,_channel_id) {
         await client.close();
     }
 }
+async function save_server_voice(_server_id,_channel_id) {
+  try {
+      await client.connect();
+      let servers = await client.db("birthdaybot").collection("servers");
+      let s = await servers.findOne({server_id:_server_id})
+      if(s){
+        await servers.updateOne({server_id:_server_id} ,{$set: {
+          voice_channel_id: _channel_id
+        }})
+      }else{
+        await servers.insertOne({server_id:_server_id,voice_channel_id:_channel_id});
+      }
+      
+  }finally{
+      await client.close();
+  }
+}
 
 async function save_server_role(_server_id,role_id) {
   try {
@@ -193,6 +210,7 @@ async function get_birthdays_on_day(day) {
 module.exports =  {
     save_server,
     save_server_role,
+    save_server_voice,
     get_birthdays,
     get_birthdays_on_day,
     save_birthday,

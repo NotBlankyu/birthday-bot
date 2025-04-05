@@ -1,4 +1,4 @@
-const { Client, Events, GatewayIntentBits, Collection, MessageFlags } = require('discord.js');
+const { Client, Events, GatewayIntentBits, Collection, MessageFlags,ChannelType} = require('discord.js');
 
 require('dotenv').config()
 const fs = require('node:fs');
@@ -8,7 +8,7 @@ const { get_server,delete_birthday } = require('./util/db');
 const { manage_message } = require('./util/manage_list');
 
 const discord_token = process.env.DISCORD_TOKEN;
-const client = new Client({ intents: [GatewayIntentBits.Guilds,GatewayIntentBits.GuildMembers,GatewayIntentBits.GuildPresences] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds,GatewayIntentBits.GuildMembers,GatewayIntentBits.GuildPresences,GatewayIntentBits.GuildVoiceStates] });
 
 
 client.once(Events.ClientReady, readyClient => {
@@ -62,6 +62,46 @@ client.on(Events.GuildMemberRemove, async guildmember => {
 	}	
 })
 
+var channels_list = []
+
+
+client.on(Events.VoiceStateUpdate ,(oldState, newState) => {
+	try {
+		if (oldState.member.user.bot) return;
+		var x = get_server(newState.guild.id); 
+		if(x.voice_channel_id == null) return;
+		// Create and move to Channel
+		if(newState.channelId == x.voice_channel_id  && oldState.channelId != newState.channelId ){
+			newState.guild.channels.create({
+				name: newState.member.displayName,
+				type: ChannelType.GuildVoice,
+				permissionOverwrites: [
+					{
+						id:newState.member.id,
+						allow:['ManageChannels']
+					}
+				],
+				parent: newState.channel.parentId,
+			}).then(channel =>{
+				newState.member.voice.setChannel(channel);
+				channels_list.push(channel.id);
+			});
+		}else if(newState.channelId == null){
+			var channel_index = channels_list.indexOf(oldState.channelId);
+			if(channel_index != -1){
+				if(oldState.channel.members.size == 0){
+					channels_list.splice(channel_index,1);
+					oldState.guild.channels.delete(oldState.channel);
+				}
+			}
+		}
+	}catch (error){
+		console.log(error);
+	}
+	
+	
+
+})
 
 
 
