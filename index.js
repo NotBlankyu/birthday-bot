@@ -6,6 +6,7 @@ const path = require('node:path');
 const cron = require('node-cron');
 const { get_server,delete_birthday } = require('./util/db');
 const { manage_message } = require('./util/manage_list');
+const { error } = require('node:console');
 
 const discord_token = process.env.DISCORD_TOKEN;
 const client = new Client({ intents: [GatewayIntentBits.Guilds,GatewayIntentBits.GuildMembers,GatewayIntentBits.GuildPresences,GatewayIntentBits.GuildVoiceStates] });
@@ -13,6 +14,8 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds,GatewayIntentBits
 
 client.once(Events.ClientReady, readyClient => {
 	console.log(`Ready! Logged in as ${readyClient.user.tag}`);
+	const Guilds = client.guilds.cache.map(guild => guild.name);
+    console.log(Guilds);
 });
 
 client.commands = new Collection();
@@ -79,14 +82,20 @@ client.on(Events.VoiceStateUpdate ,async (oldState, newState) => {
 					{
 						id:newState.member.id,
 						allow:['ManageChannels']
+					},{
+						id:client.user.id,
+						allow:['ViewChannel']
 					}
 				],
 				parent: newState.channel.parentId,
 			}).then(channel =>{
-				newState.member.voice.setChannel(channel);
+				newState.member.voice.setChannel(channel.id);
 				channels_list.push(channel.id);
+			}).catch(error=>{
+				console.log(error)
 			});
-		}else if(newState.channelId == null){
+			
+		}else if(newState.channelId == null || ( channels_list.indexOf(oldState.channelId) != -1 && oldState.channelId != newState.channelId)){
 			var channel_index = channels_list.indexOf(oldState.channelId);
 			if(channel_index != -1){
 				if(oldState.channel.members.size == 0){
@@ -99,8 +108,6 @@ client.on(Events.VoiceStateUpdate ,async (oldState, newState) => {
 		console.log(error);
 	}
 	
-	
-
 })
 
 

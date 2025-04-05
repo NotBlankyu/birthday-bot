@@ -11,7 +11,7 @@ module.exports = {
             .setDescription("Channel where people need to join.")
             .setRequired(true)
         )
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels|PermissionFlagsBits.ManageGuild),
     async execute(interaction) {
         const channel = interaction.options.getChannel("voice-channel");
         await interaction.deferReply()
