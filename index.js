@@ -65,10 +65,10 @@ client.on(Events.GuildMemberRemove, async guildmember => {
 var channels_list = []
 
 
-client.on(Events.VoiceStateUpdate ,(oldState, newState) => {
+client.on(Events.VoiceStateUpdate ,async (oldState, newState) => {
 	try {
 		if (oldState.member.user.bot) return;
-		var x = get_server(newState.guild.id); 
+		var x = await get_server(newState.guild.id); 
 		if(x.voice_channel_id == null) return;
 		// Create and move to Channel
 		if(newState.channelId == x.voice_channel_id  && oldState.channelId != newState.channelId ){
