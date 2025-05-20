@@ -8,6 +8,7 @@ const cron = require('node-cron');
 
 
 const discord_token = process.env.DISCORD_TOKEN;
+console.log(discord_token)
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 var server_channel_dict = new Map()
@@ -26,6 +27,7 @@ client.once(Events.ClientReady, async readyClient => {
     }
     for (const user of birthdays) {
         const ids = user.split("/")
+        console.log(`Happy birthday to ${ids}`)
         var channel_id = server_channel_dict.get(ids[0])
         if(channel_id == null){
             var _user = await readyClient.users.fetch(ids[1])
@@ -50,7 +52,7 @@ client.once(Events.ClientReady, async readyClient => {
             
         }else{
             var _user = await readyClient.users.fetch(ids[1])
-            
+            await get_server(ids[0]).then(server => {
             readyClient.channels.fetch(channel_id).then(channel => {
                 const embed = new EmbedBuilder()
                 .setColor(0xeb9534)
@@ -64,6 +66,7 @@ client.once(Events.ClientReady, async readyClient => {
                 //channel.send({files:[_user.avatarURL()]})
             })
                 .catch(console.error);
+            })
         }
     }
 
