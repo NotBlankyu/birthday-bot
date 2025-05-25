@@ -77,23 +77,32 @@ client.on(Events.VoiceStateUpdate ,async (oldState, newState) => {
 			newState.guild.channels.create({
 				name: newState.member.displayName,
 				type: ChannelType.GuildVoice,
-				permissionOverwrites: [
-					{
-						id:newState.member.id,
-						allow:['ManageChannels']
-					},{
-						id:client.user.id,
-						allow:['ViewChannel']
-					}
-				],
 				parent: newState.channel.parentId,
 			}).then(channel =>{
 				newState.member.voice.setChannel(channel.id);
 				channels_list.push(channel.id);
+				const overwrites = channel.permissionOverwrites.cache.map(overwrite => ({
+					id: overwrite.id,
+					allow: overwrite.allow.toArray(),
+					deny: overwrite.deny.toArray(),
+				}));
+				overwrites.push({
+					id: newState.member.id,
+					allow:['ManageChannels']
+				})
+				overwrites.push({
+					id: client.user.id,
+					allow:['ViewChannel']
+				})
+
+				channel.edit({
+					permissionOverwrites: overwrites
+				}).then(() => {
+					console.log(`Permissions updated for channel: ${channel.name}`)
+				})
 			}).catch(error=>{
 				console.log(error)
 			});
-			
 		}else if(newState.channelId == null || ( channels_list.indexOf(oldState.channelId) != -1 && oldState.channelId != newState.channelId)){
 			var channel_index = channels_list.indexOf(oldState.channelId);
 			if(channel_index != -1){
